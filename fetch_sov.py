@@ -16,6 +16,7 @@ import json
 import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -25,6 +26,8 @@ import config
 
 BASE_DIR = Path(__file__).resolve().parent
 CACHE_PATH = BASE_DIR / config.CACHE_DIR / config.CACHE_FILE
+
+KST = ZoneInfo("Asia/Seoul")
 
 DATALAB_URL = "https://openapi.naver.com/v1/datalab/search"
 
@@ -207,7 +210,7 @@ def load_history():
 def save_history(df, last_updated=None):
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "last_updated": last_updated or datetime.now().isoformat(timespec="seconds"),
+        "last_updated": last_updated or datetime.now(KST).isoformat(timespec="seconds"),
         "history": df.to_dict(orient="records"),
     }
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
